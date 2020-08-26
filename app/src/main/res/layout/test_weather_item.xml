@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainItemBox"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="5dp"
+    android:clickable="false"
+    android:descendantFocusability="blocksDescendants"
+
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:orientation="horizontal"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <ImageView
+        android:id="@+id/imageViewSample"
+        android:layout_width="79dp"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:contentDescription="@string/imageViewSample"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        app:srcCompat="@drawable/sunglasses" />
+
+    <LinearLayout
+        android:id="@+id/innerItemBox"
+        android:layout_width="86dp"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:layout_width="86dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="@string/nameTextView"
+            android:textColor="#000000"
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/weatherInfo"
+            android:layout_width="86dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="@string/weatherInfo"
+            android:textColor="#751515"
+            android:textIsSelectable="true"
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="136dp"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/temperatureText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="@string/temperatureText"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/pressureText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="@string/pressureText"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/humidityText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:text="@string/humidityText"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/addToFavBtn"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/removefromfavorites" />
+
+
+</LinearLayout>

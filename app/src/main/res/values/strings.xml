@@ -1,0 +1,38 @@
+<resources>
+    <string name="app_name">weather_app_drawer_second_java</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Cosy weather app</string>
+    <string name="nav_header_subtitle">geekbrains project</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">History</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="settings_menu">Settings</string>
+
+    <string name="nameTextView">City</string>
+    <string name="weatherInfo">weather</string>
+    <string name="imageViewSample">Image of the weather</string>
+    <string name="temperatureText">temperature</string>
+    <string name="pressureText">pressure</string>
+    <string name="humidityText">humidity</string>
+    <string name="favouritebutton">Add</string>
+    <string name="addInFavourite">Add to favourite</string>
+    <string name="tempFiveDays">Temperature for 5 days</string>
+    <string name="humidityForFiveDays">Humidity for 5 days</string>
+    <string name="cityNameView">City</string>
+    <string name="cityTempTextView">Temperature</string>
+    <string name="windSpeedTextView">wind speed</string>
+    <string name="humidityTextView">humidity</string>
+    <string name="pressureTextView">pressure</string>
+    <string name="searchTitle">Search</string>
+    <string name="landscapeStartImage">Landscape</string>
+    <string name="modeViewId">Easter Egg</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="checkWeatherYandex">Check weather on Yandex</string>
+    <string name="about_app">About</string>
+
+</resources>
