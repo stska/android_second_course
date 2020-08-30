@@ -28,15 +28,15 @@ import javax.net.ssl.HttpsURLConnection;
 
 
 public class LoaderClass extends AsyncTaskLoader<Example> {
-
+  //  private String cityName = "";
+//  //  private String cityHum = "";
+  //  private String cityWind = "";
+   // private String cityPres = "";
     private String mParam2;
     private ProgressBar progressBar;
     private final String METRIC = "&units=metric";
     private final String IMPERIAL = "";
-    private final String weatherSite = "https://api.openweathermap.org/data/2.5/weather?q=";
-    private final String apiKey = "&appid=80b8b51878e4ae64fc72d800c1679d04";
-    private final String UNITS = "units";
-    private final String CELCSIUS = "celsius";
+
 
     public LoaderClass(@NonNull Context context, String data, ProgressBar progressBar) {
         super(context);
@@ -47,25 +47,38 @@ public class LoaderClass extends AsyncTaskLoader<Example> {
     @Nullable
     @Override
     public Example loadInBackground() {
-        String units = SharedPreferencesClass.getData(getContext(),UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
-        String url2 = weatherSite.concat(mParam2).concat(units).concat(apiKey);
+        String apiKey = "80b8b51878e4ae64fc72d800c1679d04";
+        String units = SharedPreferencesClass.getData(getContext(),"units").contains("celsius") ? METRIC : IMPERIAL;
+        String url2 = "https://api.openweathermap.org/data/2.5/weather?q=".concat(mParam2).concat(units).concat("&appid=80b8b51878e4ae64fc72d800c1679d04");
+
+
 
         try {
             final URL url = new URL(url2);
+
+
             HttpsURLConnection urlConnection = null;
+
             urlConnection = (HttpsURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.setReadTimeout(10000);
 
+
             int code = urlConnection.getResponseCode();
             if (code >= 200 && code <= 299) {
 
+                // BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
                 BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                 String result = null;
+
                 if ((result = in.readLine()) != null) {
 
                 }
+
                 Example data = new Gson().fromJson(result, Example.class);
+                System.out.println(data);
+
+
 
                 String url3 = "https://api.openweathermap.org/data/2.5/forecast?q=".concat(mParam2).concat("&appid=80b8b51878e4ae64fc72d800c1679d04");
                 try {
@@ -77,15 +90,20 @@ public class LoaderClass extends AsyncTaskLoader<Example> {
                     urlConnection2.setReadTimeout(10000);
                     int code2 = urlConnection2.getResponseCode();
                     if (code2 >= 200 && code2 <= 299) {
+
+                        // BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
                         BufferedReader inn = new BufferedReader(new InputStreamReader(urlConnection2.getInputStream()));
                         String result2 = null;
 
                         if ((result2 = inn.readLine()) != null) {
 
                         }
+
                         Example3 data2 = new Gson().fromJson(result2,  Example3.class);
                         System.out.println(data2.getList().size());
-
+                       for(int i = 4; i < data2.getList().size(); i+=8){
+                           System.out.println(data2.getList().get(i).getMain().getTemp());
+                       }
                     }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -94,11 +112,21 @@ public class LoaderClass extends AsyncTaskLoader<Example> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
+
+
+
+
+
              return data;
             }
+
+
         }catch (IOException e){
             e.printStackTrace();
         }
+
+
         return null;
     }
 }

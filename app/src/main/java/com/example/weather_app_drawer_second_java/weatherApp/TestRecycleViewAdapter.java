@@ -1,12 +1,13 @@
 package com.example.weather_app_drawer_second_java.weatherApp;
 
 
-import android.app.AlertDialog;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,143 +20,122 @@ import com.example.weather_app_drawer_second_java.R;
 import java.util.ArrayList;
 
 public class TestRecycleViewAdapter extends RecyclerView.Adapter<TestRecycleViewAdapter.ViewHolder> {
-    private final String FAV_FLAG = "favBtnState";
-    private final String BTN_STATE_CLICKED = "clicked";
-    private final String BTN_STATE_CLEAR = "not_clicked";
-    private Context mContext;
+   private final String FAV_FLAG = "favBtnState";
+   private final String BTN_STATE_CLICKED = "clicked";
+   private final String BTN_STATE_CLEAR = "not_clicked";
+  private Context mContext;
 
-    public interface OnItemClickListener {
-        void onItemClick(View view, int position);
+    public interface OnItemClickListener{
+        void onItemClick(View view,int position);
     }
 
+    //private String[] dataSource;
     private ArrayList<WeatherHistory> dataSource;
+    private WeatherInfo weatherInfo = new WeatherInfo();
 
-
-    private OnItemClickListener itemClickListener;
-
-    public void setOnItemListener(OnItemClickListener itemClickListener) {
+   private OnItemClickListener itemClickListener;
+    public void setOnItemListener(OnItemClickListener itemClickListener){
         this.itemClickListener = itemClickListener;
     }
 
 
-    public TestRecycleViewAdapter(ArrayList<WeatherHistory> dataSource, Context mContext) {
-        this.dataSource = dataSource;
-        this.mContext = mContext;
-        SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLEAR);
+  public  TestRecycleViewAdapter(ArrayList<WeatherHistory> dataSource,Context mContext){
+      this.dataSource = dataSource;
+      this.mContext = mContext;
+      SharedPreferencesClass.insertData(mContext,FAV_FLAG,BTN_STATE_CLEAR);
 
-    }
+  }
+     public class ViewHolder extends RecyclerView.ViewHolder{
+          private TextView textView;
+          private TextView weatherText;
+          private TextView pressureText;
+          private TextView tempText;
+          private TextView humidityText;
+          private ImageButton addToFavBtn;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView textView;
-        private TextView weatherText;
-        private TextView pressureText;
-        private TextView tempText;
-        private TextView humidityText;
-        private ImageButton addToFavBtn;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            weatherText = itemView.findViewById(R.id.weatherInfo);
-            pressureText = itemView.findViewById(R.id.pressureText);
-            tempText = itemView.findViewById(R.id.temperatureText);
-            humidityText = itemView.findViewById(R.id.humidityText);
-            addToFavBtn = itemView.findViewById(R.id.addToFavBtn);
-            addToFavBtn.setOnClickListener(new ImageButton.OnClickListener() {
 
-                @Override
-                public void onClick(View view) {
-                    String checkFlag = SharedPreferencesClass.getData(mContext, FAV_FLAG);
-                    if (checkFlag.contains(BTN_STATE_CLEAR)) {
-                        addToFavBtn.setImageResource(R.drawable.addtofavorites);
-                        SharedPreferencesClass.deleteData(mContext, FAV_FLAG);
-                        SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLICKED);
-                        WeatherHistory.weatherHistories.get(getAdapterPosition()).setFavFlag(true);
 
-                    } else {
-                        addToFavBtn.setImageResource(R.drawable.removefromfavorites);
-                        SharedPreferencesClass.deleteData(mContext, FAV_FLAG);
-                        SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLEAR);
-                        WeatherHistory.weatherHistories.get(getAdapterPosition()).setFavFlag(false);
-                        System.out.println(getAdapterPosition());
-                    }
-                }
+       //  private LinearLayout linearLayout;
+         public ViewHolder(@NonNull View itemView) {
+             super(itemView);
+             //textView = (TextView) itemView;
 
-            });
 
-            textView = itemView.findViewById(R.id.nameTextView);
-        }
+             weatherText = itemView.findViewById(R.id.weatherInfo);
+             pressureText = itemView.findViewById(R.id.pressureText);
+             tempText = itemView.findViewById(R.id.temperatureText);
+             humidityText = itemView.findViewById(R.id.humidityText);
 
-        public TextView getHumidityText() {
-            return humidityText;
-        }
 
-        public TextView getTextView() {
-            return textView;
+             addToFavBtn = itemView.findViewById(R.id.addToFavBtn);
+             addToFavBtn.setOnClickListener(new ImageButton.OnClickListener(){
 
-        }
+                 @Override
+                 public void onClick(View view) {
+                     String checkFlag = SharedPreferencesClass.getData(mContext,FAV_FLAG);
+                     boolean btnFlag =  WeatherHistory.weatherHistories.get(getAdapterPosition()).getFavFlag();
+                     if(checkFlag.contains(BTN_STATE_CLEAR)){
+                         addToFavBtn.setImageResource(R.drawable.addtofavorites);
+                         SharedPreferencesClass.deleteData(mContext,FAV_FLAG);
+                         SharedPreferencesClass.insertData(mContext,FAV_FLAG,BTN_STATE_CLICKED);
+                         WeatherHistory.weatherHistories.get(getAdapterPosition()).setFavFlag(true);
 
-        public TextView getWeatherText() {
-            return weatherText;
-        }
+                     } else {
+                         addToFavBtn.setImageResource(R.drawable.removefromfavorites);
+                         SharedPreferencesClass.deleteData(mContext,FAV_FLAG);
+                         SharedPreferencesClass.insertData(mContext,FAV_FLAG,BTN_STATE_CLEAR);
+                         WeatherHistory.weatherHistories.get(getAdapterPosition()).setFavFlag(false);
+                         System.out.println(getAdapterPosition());
+                     }
 
-        public TextView getPressureText() {
-            return pressureText;
-        }
 
-        public TextView getTempText() {
-            return tempText;
-        }
-    }
+                     }
+
+             });
+
+
+             textView = itemView.findViewById(R.id.nameTextView);
+
+         }
+         public TextView getHumidityText(){
+             return humidityText;
+         }
+         public TextView getTextView(){
+             return textView;
+            // return linearLayout;
+         }
+         public TextView getWeatherText(){
+             return weatherText;
+         }
+         public TextView getPressureText(){
+             return pressureText;
+         }
+         public TextView getTempText(){
+             return tempText;
+         }
+     }
 
     @NonNull
     @Override
-    public TestRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.test_weather_item, parent, false);
-        v.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final int position = (int) view.getTag();
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle(R.string.exclamation)
-                        .setMessage("Вы точно хотите удалить эту запись?")
-                        .setCancelable(false)
-                        .setNegativeButton(R.string.no,
+    public TestRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.test_weather_item,parent,false);
 
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Toast.makeText(mContext, "Нет!", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                        .setPositiveButton(R.string.yes,
-
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        Toast.makeText(mContext, "Да!", Toast.LENGTH_SHORT).show();
-                                        WeatherHistory.weatherHistories.remove(position);
-                                        notifyDataSetChanged();
-                                    }
-                                });
-                AlertDialog alert = builder.create();
-                alert.show();
-
-            }
-        });
         return new ViewHolder(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TestRecycleViewAdapter.ViewHolder holder, int position) {
+
+
         holder.getTextView().setText(dataSource.get(position).getCityName());
         holder.getPressureText().setText(dataSource.get(position).getCityPressure());
         holder.getTempText().setText(dataSource.get(position).getCityTmp());
         holder.getWeatherText().setText(dataSource.get(position).getWeatherText());
-        holder.getHumidityText().setText(dataSource.get(position).getHumText());
-        holder.itemView.setTag(position);
-
-        if (WeatherHistory.weatherHistories.get(position).getFavFlag()) {
+        holder.getHumidityText().setText(weatherInfo.getHumidityArray()[position]);
+        if(WeatherHistory.weatherHistories.get(position).getFavFlag()){
             holder.addToFavBtn.setImageResource(R.drawable.addtofavorites);
-        } else holder.addToFavBtn.setImageResource(R.drawable.removefromfavorites);
-
+        }else holder.addToFavBtn.setImageResource(R.drawable.removefromfavorites);
     }
 
 

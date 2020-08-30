@@ -19,7 +19,7 @@ import com.example.weather_app_drawer_second_java.R;
 import com.example.weather_app_drawer_second_java.weatherApp.TestRecycleViewAdapter;
 
 import com.example.weather_app_drawer_second_java.weatherApp.WeatherHistory;
-
+import com.example.weather_app_drawer_second_java.weatherApp.WeatherInfo;
 
 public class GalleryFragment extends Fragment {
 
@@ -28,8 +28,8 @@ public class GalleryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         final String test = "";
-        if (!WeatherHistory.weatherHistories.isEmpty()) {
-            for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
+        if(!WeatherHistory.weatherHistories.isEmpty()){
+            for(int i = 0; i < WeatherHistory.weatherHistories.size();i ++){
                 System.out.println(WeatherHistory.weatherHistories.get(i).getCityName());
 
             }
@@ -45,21 +45,26 @@ public class GalleryFragment extends Fragment {
                 textView.setText(test);
             }
         });
-
-        initRecycleView(root);
+        WeatherInfo weatherInfo = new WeatherInfo();
+        initRecycleView(root,weatherInfo.getCityNamesArray());
         return root;
     }
-
     private FragmentActivity myContext;
+    private void initRecycleView(View view, String[] data) {
 
-    private void initRecycleView(View view) {
         RecyclerView recyclerView = view.findViewById(R.id.cityWeatherRecycleView);
         recyclerView.setHasFixedSize(true);
+
+
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(myContext);
         recyclerView.setLayoutManager(layoutManager);
 
-        TestRecycleViewAdapter adapter = new TestRecycleViewAdapter(WeatherHistory.weatherHistories, getContext());
+
+        TestRecycleViewAdapter adapter = new TestRecycleViewAdapter(WeatherHistory.weatherHistories,getContext());
         recyclerView.setAdapter(adapter);
-    }
+
+
+
+}
 }

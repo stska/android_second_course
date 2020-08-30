@@ -21,32 +21,39 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
     private final String BTN_STATE_CLEAR = "not_clicked";
     private Context mContext;
 
-    public interface OnItemClickListener {
+    public interface OnItemClickListener{
         void onItemClick(View view, int position);
     }
 
-    private List<WeatherHistory> favListCities = new ArrayList<>();
+    //private String[] dataSource;
+   // private ArrayList<WeatherHistory> dataSource;
+    private WeatherInfo weatherInfo = new WeatherInfo();
+    private List<WeatherHistory> favListCities =  new ArrayList<>();
 
     private FavRecycleViewAdapt.OnItemClickListener itemClickListener;
-
-    public void setOnItemListener(FavRecycleViewAdapt.OnItemClickListener itemClickListener) {
+    public void setOnItemListener(FavRecycleViewAdapt.OnItemClickListener itemClickListener){
         this.itemClickListener = itemClickListener;
     }
 
-    public FavRecycleViewAdapt(Context mContext) {
+
+    /*  public  TestRecycleViewAdapter(String[] dataSource){
+          this.dataSource = dataSource;
+
+      } */
+    public  FavRecycleViewAdapt (Context mContext){
+
         this.mContext = mContext;
-        SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLEAR);
-        if (!WeatherHistory.weatherHistories.isEmpty()) {
-            for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
-                if (WeatherHistory.weatherHistories.get(i).getFavFlag()) {
-                    favListCities.add(WeatherHistory.weatherHistories.get(i));
+        SharedPreferencesClass.insertData(mContext,FAV_FLAG,BTN_STATE_CLEAR);
+        if(!WeatherHistory.weatherHistories.isEmpty()){
+            for(int i = 0; i < WeatherHistory.weatherHistories.size();i ++){
+                if(WeatherHistory.weatherHistories.get(i).getFavFlag()){
+                  favListCities.add(WeatherHistory.weatherHistories.get(i));
                 }
             }
         }
 
     }
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder{
         private TextView textView;
         private TextView weatherText;
         private TextView pressureText;
@@ -55,59 +62,81 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
         private ImageButton addToFavBtn;
 
 
-        public ViewHolder(@NonNull final View itemView) {
+
+
+        //  private LinearLayout linearLayout;
+        public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            //textView = (TextView) itemView;
+
 
             weatherText = itemView.findViewById(R.id.weatherInfo);
             pressureText = itemView.findViewById(R.id.pressureText);
             tempText = itemView.findViewById(R.id.temperatureText);
             humidityText = itemView.findViewById(R.id.humidityText);
 
+
             addToFavBtn = itemView.findViewById(R.id.addToFavBtn);
-            addToFavBtn.setOnClickListener(new ImageButton.OnClickListener() {
+            addToFavBtn.setOnClickListener(new ImageButton.OnClickListener(){
 
                 @Override
                 public void onClick(View view) {
-                    String checkFlag = SharedPreferencesClass.getData(mContext, FAV_FLAG);
-
-                    if (checkFlag.contains(BTN_STATE_CLEAR)) {
+                    String checkFlag = SharedPreferencesClass.getData(mContext,FAV_FLAG);
+                    boolean btnFlag =  WeatherHistory.weatherHistories.get(getAdapterPosition()).getFavFlag();
+                    if(checkFlag.contains(BTN_STATE_CLEAR)){
                         addToFavBtn.setImageResource(R.drawable.addtofavorites);
-                        SharedPreferencesClass.deleteData(mContext, FAV_FLAG);
-                        SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLICKED);
+                        SharedPreferencesClass.deleteData(mContext,FAV_FLAG);
+                        SharedPreferencesClass.insertData(mContext,FAV_FLAG,BTN_STATE_CLICKED);
                         WeatherHistory.weatherHistories.get(getAdapterPosition()).setFavFlag(true);
+
                     } else {
                         addToFavBtn.setImageResource(R.drawable.removefromfavorites);
-                        SharedPreferencesClass.deleteData(mContext, FAV_FLAG);
-                        SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLEAR);
+                        SharedPreferencesClass.deleteData(mContext,FAV_FLAG);
+                        SharedPreferencesClass.insertData(mContext,FAV_FLAG,BTN_STATE_CLEAR);
                         WeatherHistory.weatherHistories.get(getAdapterPosition()).setFavFlag(false);
                         System.out.println(getAdapterPosition());
-                        favListCities.remove(this);
                     }
 
+
+                    //addToFavBtn.setBackgroundResource(R.drawable.moon);
+                    // addToFavBtn.setImageResource(R.drawable.addtofavorites);
+                    // itemClickListener.onItemClick(view,getAdapterPosition());
+
+
+
+
+                    //  Toast.makeText(App.getContext(),"search button is Clicked INSIDE", Toast.LENGTH_LONG).show();
                 }
 
             });
+
+
             textView = itemView.findViewById(R.id.nameTextView);
+          /*   textView.setOnClickListener(new View.OnClickListener(){
 
+                 @Override
+                 public void onClick(View v) {
+                     if(itemClickListener !=null){
+                         itemClickListener.onItemClick(v,getAdapterPosition());
+                     }
+                 }
+             });      */
+            // linearLayout = (LinearLayout) itemView;
         }
-
-        public TextView getHumidityText() {
+        public TextView getHumidityText(){
             return humidityText;
         }
-
-        public TextView getTextView() {
+        public TextView getTextView(){
             return textView;
+            // return linearLayout;
         }
-
-        public TextView getWeatherText() {
+        public TextView getWeatherText(){
             return weatherText;
         }
-
-        public TextView getPressureText() {
+        public TextView getPressureText(){
             return pressureText;
         }
-
-        public TextView getTempText() {
+        public TextView getTempText(){
             return tempText;
         }
     }
@@ -115,7 +144,7 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
     @NonNull
     @Override
     public FavRecycleViewAdapt.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.test_weather_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.test_weather_item,parent,false);
 
         return new FavRecycleViewAdapt.ViewHolder(v);
     }
@@ -123,13 +152,21 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
     @Override
     public void onBindViewHolder(@NonNull FavRecycleViewAdapt.ViewHolder holder, int position) {
 
+          /* holder.getTextView().setText(dataSource[position]);
+           holder.getPressureText().setText(weatherInfo.getPressureArray()[position]);
+           holder.getTempText().setText(weatherInfo.getTemperatureArray()[position]);
+           holder.getWeatherText().setText(weatherInfo.getWeatherArray()[position]);
+           holder.getHumidityText().setText(weatherInfo.getHumidityArray()[position]);
+             */
         holder.getTextView().setText(favListCities.get(position).getCityName());
-        holder.getPressureText().setText(favListCities.get(position).getCityPressure().concat("hPa"));
+        holder.getPressureText().setText(favListCities.get(position).getCityPressure());
         holder.getTempText().setText(favListCities.get(position).getCityTmp());
         holder.getWeatherText().setText(favListCities.get(position).getWeatherText());
-        holder.getHumidityText().setText(favListCities.get(position).getHumText().concat("%"));
+        holder.getHumidityText().setText(weatherInfo.getHumidityArray()[position]);
         holder.addToFavBtn.setImageResource(R.drawable.addtofavorites);
+
     }
+
 
     @Override
     public int getItemCount() {

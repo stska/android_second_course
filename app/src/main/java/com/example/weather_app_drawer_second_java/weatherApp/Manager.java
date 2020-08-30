@@ -1,11 +1,15 @@
 package com.example.weather_app_drawer_second_java.weatherApp;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
-
+import java.util.Set;
 
 public class Manager  {
    public static final String MODE = "Day Mode";

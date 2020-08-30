@@ -1,24 +1,37 @@
 package com.example.weather_app_drawer_second_java.weatherApp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class WeatherHistory {
 
+    /*
+    cityName = data.getName();
+        cityTmp = data.getMain().getTemp().toString();
+        cityHum = data.getMain().getHumidity().toString();
+        cityWind = data.getWind().getSpeed().toString();
+        cityPres = data.getMain().getPressure().toString();
+
+        -----------
+        private TextView textView;
+          private TextView weatherText;
+          private TextView pressureText;
+          private TextView tempText;
+          private TextView humidityText;
+     */
     private String cityName;
-    private String cityTmp;
+    private String  cityTmp;
     private String cityPressure;
     private String weatherText;
-    private String humText;
     private boolean favFlag;
 
-    public static ArrayList<WeatherHistory> weatherHistories = new ArrayList<>();
+    public static ArrayList<WeatherHistory> weatherHistories =  new ArrayList<>();
 
-    public WeatherHistory(String cityName, String cityTmp, String cityPressure, String weatherText, String humText) {
+    public WeatherHistory(String cityName,String cityTmp, String cityPressure,  String weatherText){
         this.cityName = cityName;
         this.cityTmp = cityTmp;
         this.cityPressure = cityPressure;
         this.weatherText = weatherText;
-        this.humText = humText;
         favFlag = false;
         weatherHistories.add(this);
     }
@@ -38,16 +51,8 @@ public class WeatherHistory {
     public String getWeatherText() {
         return weatherText;
     }
-
-    public boolean getFavFlag() {
-        return favFlag;
-    }
-
-    public void setFavFlag(boolean favFlag) {
-        this.favFlag = favFlag;
-    }
-
-    public String getHumText() {
-        return humText;
+    public boolean getFavFlag() { return favFlag; }
+    public void setFavFlag(boolean favFlag){
+         this.favFlag = favFlag;
     }
 }
