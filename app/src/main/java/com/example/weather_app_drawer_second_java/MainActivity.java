@@ -1,8 +1,10 @@
 package com.example.weather_app_drawer_second_java;
 
 import android.app.SearchManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import com.example.weather_app_drawer_second_java.weatherApp.CityWeatherDescription;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.Example2;
+import com.example.weather_app_drawer_second_java.weatherApp.JsonForecastClasses.Sys;
 import com.example.weather_app_drawer_second_java.weatherApp.SingltoneListOfCities;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -131,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSuggestionClick(int i) {
                 Cursor cursor = (Cursor) mAdapter.getItem(i);
-
+                String temp = cursor.getString(i);
+                System.out.println(temp);
                 if(cursor != null && cursor.moveToFirst()){
                     goTo(cursor.getString(i));
                 }
