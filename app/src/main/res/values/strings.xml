@@ -41,5 +41,6 @@
     <string name="no">Нет</string>
      <string name="dayTempInit">Day: </string>
     <string name="nightTempInit">Night: </string>
-
+     <string name="notifications">Notifications: </string>
+    <string name="switchNotifier">Rain (within 3 hours)</string>
 </resources>

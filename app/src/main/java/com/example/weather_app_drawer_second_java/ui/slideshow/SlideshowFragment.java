@@ -1,96 +1,110 @@
 package com.example.weather_app_drawer_second_java.ui.slideshow;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.weather_app_drawer_second_java.NotificationWeatherIntentService;
 import com.example.weather_app_drawer_second_java.R;
-import com.example.weather_app_drawer_second_java.weatherApp.App;
 import com.example.weather_app_drawer_second_java.weatherApp.SharedPreferencesClass;
 
-import com.google.android.material.snackbar.Snackbar;
-// TODO (1°C × 9/5) + 32 = 33.8°F
 
 public class SlideshowFragment extends Fragment {
-
-    private SlideshowViewModel slideshowViewModel;
-
     SharedPreferences sharedPreferences;
+    private SlideshowViewModel slideshowViewModel;
     public static final String SETTING = "mySetting";
-    public static final String  UNITS = "units";
+    public static final String UNITS = "units";
     public static final String NIGHT_MODE = "night";
     public static final String CELSIUS = "celsius";
     public static final String FAHRENHEIT = "fahrenheit";
+    public static final String RAIN_ALERT = "rain";
+    public static final String ALERTS = "rain_alert";
+    private Switch switcher;
+    private RadioGroup radioGroup;
+    private Switch rainNotificationSwitch;
+    static final String BROADCAST_ACT = "com.example.weather_app_drawer_second_java.service.done";
 
-   private Switch switcher;
-    private  RadioGroup radioGroup;
+    private BroadcastReceiver weatherUpload = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("BROADCAST WORKINGGGGGGGGGGGGG");
+        }
+    };
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         slideshowViewModel =
                 ViewModelProviders.of(this).get(SlideshowViewModel.class);
+
         final View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
-   /*     final TextView textView = root.findViewById(R.id.text_slideshow);
-        slideshowViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });          */
-        radioGroup = (RadioGroup)root.findViewById(R.id.tempretureRadioGroup);
+        rainNotificationSwitch = (Switch) root.findViewById(R.id.rainNotifiication);
+        if (rainNotificationSwitch != null) {
+            rainNotificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+                        getActivity().startService(new Intent(getActivity(), NotificationWeatherIntentService.class));
+                        NotificationWeatherIntentService.startActionFoo(getContext(), ALERTS);
+                        SharedPreferencesClass.insertData(getContext(), ALERTS, RAIN_ALERT);
+                    } else {
+                        Intent serviceIntent = new Intent(getActivity(), NotificationWeatherIntentService.class);
+                        getActivity().stopService(serviceIntent);
+                    }
+                }
+            });
+        }
+
+        radioGroup = (RadioGroup) root.findViewById(R.id.tempretureRadioGroup);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch(i){
+                switch (i) {
                     case R.id.celsiusRadioButton:
                         Toast.makeText(getContext(), "Celsius",
                                 Toast.LENGTH_SHORT).show();
-                        SharedPreferencesClass.insertData(getContext(),UNITS,CELSIUS);
+                        SharedPreferencesClass.insertData(getContext(), UNITS, CELSIUS);
                         break;
                     case R.id.fahrenheitRadioButton:
                         Toast.makeText(getContext(), "Fahrenheit",
                                 Toast.LENGTH_SHORT).show();
-                        SharedPreferencesClass.insertData(getContext(),UNITS,FAHRENHEIT);
+                        SharedPreferencesClass.insertData(getContext(), UNITS, FAHRENHEIT);
                     default:
                         break;
                 }
             }
         });
 
-
-
         switcher = (Switch) root.findViewById(R.id.nightModeSwitch);
-
-
         if (switcher != null) {
             switcher.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-
-                        SharedPreferencesClass.insertData(getContext(),SETTING,NIGHT_MODE);
+                        SharedPreferencesClass.insertData(getContext(), SETTING, NIGHT_MODE);
                         root.findViewById(R.id.setttingFragment).setBackgroundColor(Color.rgb(173, 181, 189));
 
                     } else {
                         root.findViewById(R.id.setttingFragment).setBackgroundColor(Color.WHITE);
-                        // view.findViewById(R.id.cityWeatherFrameID).setBackgroundColor(Color.WHITE);
                     }
 
                 }
@@ -98,26 +112,45 @@ public class SlideshowFragment extends Fragment {
 
         }
 
-
-
-
-
-
         return root;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        getActivity().registerReceiver(weatherUpload, new IntentFilter(BROADCAST_ACT));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().unregisterReceiver(weatherUpload);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       // sharedPreferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+        initNotificationChannel();
+        // sharedPreferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
+    }
 
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel myChannel = new NotificationChannel("2", "weather", importance);
+            notificationManager.createNotificationChannel(myChannel);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        String mode = SharedPreferencesClass.getData(getContext(),"mySetting");
-        if(!mode.contains("opppss, there is no data found")){
+        String mode = SharedPreferencesClass.getData(getContext(), "mySetting");
+        String units = SharedPreferencesClass.getData(getContext(), "units");
+        String alert = SharedPreferencesClass.getData(getContext(), ALERTS);
+
+        if (!mode.contains("opppss, there is no data found")) {
             getView().setBackgroundColor(Color.rgb(173, 181, 189));
             switcher.setOnCheckedChangeListener(null);
             switcher.setChecked(true);
@@ -125,36 +158,78 @@ public class SlideshowFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
-
-                        SharedPreferencesClass.insertData(getContext(),SETTING,NIGHT_MODE);
+                        SharedPreferencesClass.insertData(getContext(), SETTING, NIGHT_MODE);
                         getView().setBackgroundColor(Color.rgb(173, 181, 189));
 
                     } else {
-                     getView().setBackgroundColor(Color.WHITE);
-                     SharedPreferencesClass.deleteData(getContext(),"mySetting");
-                        // view.findViewById(R.id.cityWeatherFrameID).setBackgroundColor(Color.WHITE);
+                        getView().setBackgroundColor(Color.WHITE);
+                        SharedPreferencesClass.deleteData(getContext(), "mySetting");
                     }
 
                 }
             });
         }
-        String units = SharedPreferencesClass.getData(getContext(),"units");
-        if(units.contains(CELSIUS)){
-          radioGroup.setOnCheckedChangeListener(null);
-          radioGroup.check(R.id.celsiusRadioButton);
+        if (!alert.contains("opppss, there is no data found")) {
+            Intent serviceIntent = new Intent(getActivity(), NotificationWeatherIntentService.class);
+            getActivity().stopService(serviceIntent);
+            rainNotificationSwitch.setOnCheckedChangeListener(null);
+            rainNotificationSwitch.setChecked(false);
+            rainNotificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+                        //сделать проверку запущена ли служда,если нет, то запустить
+                        getActivity().startService(new Intent(getActivity(), NotificationWeatherIntentService.class));
+                        NotificationWeatherIntentService.startActionFoo(getContext(), ALERTS);
+                        SharedPreferencesClass.insertData(getContext(), ALERTS, RAIN_ALERT);
+
+                    } else {
+                        SharedPreferencesClass.deleteData(getContext(), ALERTS);
+                        Intent serviceIntent = new Intent(getActivity(), NotificationWeatherIntentService.class);
+                        getActivity().stopService(serviceIntent);
+                    }
+                }
+            });
+        } else {
+
+            rainNotificationSwitch.setOnCheckedChangeListener(null);
+            rainNotificationSwitch.setChecked(true);
+            getActivity().startService(new Intent(getActivity(), NotificationWeatherIntentService.class));
+            NotificationWeatherIntentService.startActionFoo(getContext(), ALERTS);
+            rainNotificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b) {
+                        //сделать проверку запущена ли служда,если нет, то запустить
+                        getActivity().startService(new Intent(getActivity(), NotificationWeatherIntentService.class));
+                        NotificationWeatherIntentService.startActionFoo(getContext(), ALERTS);
+                        SharedPreferencesClass.insertData(getContext(), ALERTS, RAIN_ALERT);
+
+                    } else {
+                        SharedPreferencesClass.deleteData(getContext(), ALERTS);
+                        Intent serviceIntent = new Intent(getActivity(), NotificationWeatherIntentService.class);
+                        getActivity().stopService(serviceIntent);
+                    }
+                }
+            });
+
+        }
+        if (units.contains(CELSIUS)) {
+            radioGroup.setOnCheckedChangeListener(null);
+            radioGroup.check(R.id.celsiusRadioButton);
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                    switch(i){
+                    switch (i) {
                         case R.id.celsiusRadioButton:
                             Toast.makeText(getContext(), "Celsius",
                                     Toast.LENGTH_SHORT).show();
-                            SharedPreferencesClass.insertData(getContext(),UNITS,CELSIUS);
+                            SharedPreferencesClass.insertData(getContext(), UNITS, CELSIUS);
                             break;
                         case R.id.fahrenheitRadioButton:
                             Toast.makeText(getContext(), "Fahrenheit",
                                     Toast.LENGTH_SHORT).show();
-                            SharedPreferencesClass.insertData(getContext(),UNITS,FAHRENHEIT);
+                            SharedPreferencesClass.insertData(getContext(), UNITS, FAHRENHEIT);
                         default:
                             break;
                     }
@@ -167,16 +242,16 @@ public class SlideshowFragment extends Fragment {
             radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                    switch(i){
+                    switch (i) {
                         case R.id.celsiusRadioButton:
                             Toast.makeText(getContext(), "Celsius",
                                     Toast.LENGTH_SHORT).show();
-                            SharedPreferencesClass.insertData(getContext(),UNITS,CELSIUS);
+                            SharedPreferencesClass.insertData(getContext(), UNITS, CELSIUS);
                             break;
                         case R.id.fahrenheitRadioButton:
                             Toast.makeText(getContext(), "Fahrenheit",
                                     Toast.LENGTH_SHORT).show();
-                            SharedPreferencesClass.insertData(getContext(),UNITS,FAHRENHEIT);
+                            SharedPreferencesClass.insertData(getContext(), UNITS, FAHRENHEIT);
                         default:
                             break;
                     }
