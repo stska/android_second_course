@@ -4,7 +4,7 @@ import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.Co
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Example2 {
+public class WeatherParsingVersionTwo {
 
     @SerializedName("id")
     @Expose

@@ -4,6 +4,7 @@ package com.example.weather_app_drawer_second_java.weatherApp;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.R;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 
@@ -23,6 +26,10 @@ public class TestRecycleViewAdapter extends RecyclerView.Adapter<TestRecycleView
     private final String BTN_STATE_CLICKED = "clicked";
     private final String BTN_STATE_CLEAR = "not_clicked";
     private Context mContext;
+    private SimpleDraweeView drawImage;
+    private Uri uri;
+    private String site = "http://openweathermap.org/img/wn/";
+    private String type = "@2x.png";
 
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -41,6 +48,7 @@ public class TestRecycleViewAdapter extends RecyclerView.Adapter<TestRecycleView
     public TestRecycleViewAdapter(ArrayList<WeatherHistory> dataSource, Context mContext) {
         this.dataSource = dataSource;
         this.mContext = mContext;
+        Fresco.initialize(mContext);
         SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLEAR);
 
     }
@@ -55,6 +63,7 @@ public class TestRecycleViewAdapter extends RecyclerView.Adapter<TestRecycleView
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            drawImage = (SimpleDraweeView)itemView.findViewById(R.id.my_image_view);
             weatherText = itemView.findViewById(R.id.weatherInfo);
             pressureText = itemView.findViewById(R.id.pressureText);
             tempText = itemView.findViewById(R.id.temperatureText);
@@ -151,12 +160,16 @@ public class TestRecycleViewAdapter extends RecyclerView.Adapter<TestRecycleView
         holder.getWeatherText().setText(dataSource.get(position).getWeatherText());
         holder.getHumidityText().setText(dataSource.get(position).getHumText());
         holder.itemView.setTag(position);
+        uri = Uri.parse(site.concat(dataSource.get(position).getIcon()).concat(type));
+        drawImage.setImageURI(uri);
 
         if (WeatherHistory.weatherHistories.get(position).getFavFlag()) {
             holder.addToFavBtn.setImageResource(R.drawable.addtofavorites);
         } else holder.addToFavBtn.setImageResource(R.drawable.removefromfavorites);
 
     }
+
+
 
 
     @Override

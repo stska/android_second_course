@@ -1,16 +1,20 @@
 package com.example.weather_app_drawer_second_java.weatherApp;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.R;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,12 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
     private final String BTN_STATE_CLICKED = "clicked";
     private final String BTN_STATE_CLEAR = "not_clicked";
     private Context mContext;
+    private ImageView imageViewSample;
+    private Uri uri;
+    private String site = "http://openweathermap.org/img/wn/";
+    private String type = "@2x.png";
+    private SimpleDraweeView drawImage;
+
 
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -35,6 +45,8 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
 
     public FavRecycleViewAdapt(Context mContext) {
         this.mContext = mContext;
+        Fresco.initialize(mContext);
+
         SharedPreferencesClass.insertData(mContext, FAV_FLAG, BTN_STATE_CLEAR);
         if (!WeatherHistory.weatherHistories.isEmpty()) {
             for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
@@ -62,7 +74,7 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
             pressureText = itemView.findViewById(R.id.pressureText);
             tempText = itemView.findViewById(R.id.temperatureText);
             humidityText = itemView.findViewById(R.id.humidityText);
-
+            drawImage = (SimpleDraweeView)itemView.findViewById(R.id.my_image_view);
             addToFavBtn = itemView.findViewById(R.id.addToFavBtn);
             addToFavBtn.setOnClickListener(new ImageButton.OnClickListener() {
 
@@ -129,6 +141,8 @@ public class FavRecycleViewAdapt extends RecyclerView.Adapter<FavRecycleViewAdap
         holder.getWeatherText().setText(favListCities.get(position).getWeatherText());
         holder.getHumidityText().setText(favListCities.get(position).getHumText().concat("%"));
         holder.addToFavBtn.setImageResource(R.drawable.addtofavorites);
+        uri = Uri.parse(site.concat(favListCities.get(position).getIcon()).concat(type));
+        drawImage.setImageURI(uri);
     }
 
     @Override

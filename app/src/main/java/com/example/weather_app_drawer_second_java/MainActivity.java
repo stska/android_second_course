@@ -1,10 +1,8 @@
 package com.example.weather_app_drawer_second_java;
 
 import android.app.SearchManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.os.Bundle;
@@ -17,13 +15,11 @@ import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 import com.example.weather_app_drawer_second_java.weatherApp.CityWeatherDescription;
-import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.Example2;
-import com.example.weather_app_drawer_second_java.weatherApp.JsonForecastClasses.Sys;
+import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsingVersionTwo;
 import com.example.weather_app_drawer_second_java.weatherApp.SingltoneListOfCities;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
-
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -33,16 +29,14 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
 import java.io.IOException;
+
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     SingltoneListOfCities singltoneListOfCities;
     private FragmentActivity myContext;
-
-
     private SimpleCursorAdapter mAdapter;
 
     @Override
@@ -82,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             assert query != null;
             Toast.makeText(MainActivity.this, query, Toast.LENGTH_LONG).show();
+        } else if(Intent.ACTION_VIEW.equals(intent.getAction())){
+            System.out.println(intent.getData());
+
         }
 
         final String[] from = new String[]{"cityName"};
@@ -111,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 if (compareQueryToList(s, singltoneListOfCities.example2)) {
-                    goTo(s);
+                   goTo(s);
                     clearTab(searchView);
                     return true;
                 }
@@ -134,11 +131,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSuggestionClick(int i) {
                 Cursor cursor = (Cursor) mAdapter.getItem(i);
-                String temp = cursor.getString(i);
-                System.out.println(temp);
-                if(cursor != null && cursor.moveToFirst()){
-                    goTo(cursor.getString(i));
+                if(cursor != null){
+                    goTo(cursor.getString(cursor.getColumnIndex("cityName")));
                 }
+                cursor.close();
                 clearTab(searchView);
                 return true;
             }
@@ -170,8 +166,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    private boolean compareQueryToList(String query, Example2[] example2) {
-
+    private boolean compareQueryToList(String query, WeatherParsingVersionTwo[] example2) {
         for (int i = 0; i < example2.length; i++) {
             if (example2[i].getName().equals(query)) {
                 return true;
@@ -187,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(cwd.getClass().getName())
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
-
     }
 
     @Override
@@ -206,4 +200,6 @@ public class MainActivity extends AppCompatActivity {
         searchView.setQuery("", false);
         searchView.setIconified(true);
     }
+
+
 }

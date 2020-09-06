@@ -2,15 +2,20 @@ package com.example.weather_app_drawer_second_java;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.Service;
 import android.content.Intent;
 import android.content.Context;
-import android.util.Log;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
+import android.os.Process;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.lifecycle.OnLifecycleEvent;
 
-import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.Example;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonForecastClasses.Example3;
 import com.google.gson.Gson;
 
@@ -32,12 +37,9 @@ import javax.net.ssl.HttpsURLConnection;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class NotificationWeatherIntentService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
+public class NotificationWeatherIntentService extends Service {
     private static final String ACTION_RAIN = "com.example.weather_app_drawer_second_java.action.ACTION_RAIN";
     private static final String EXTRA_RAINNOTIFIER = "com.example.weather_app_drawer_second_java.extra.RAINNOTIFIER";
-
     private final String weatherSite = "https://api.openweathermap.org/data/2.5/forecast?q=";
     private final String apiKey = "&appid=80b8b51878e4ae64fc72d800c1679d04";
     private final String CITY = "Moscow";       //в качестве заглушки пока один город, потом будет последний выбранный или из любымых
@@ -45,36 +47,53 @@ public class NotificationWeatherIntentService extends IntentService {
     private final String NOTIFICATION = "It's about to rain";
     private final String APP_NAME = "Cosy weather app: ";
     private final String ALERT_WEATHER_TYPE = "Rain";
+    private Looper serviceLooper;
+    private ServiceHandler serviceHandler;
 
+    private final class ServiceHandler extends Handler {
+        public ServiceHandler(Looper looper) {
+            super(looper);
+        }
 
-    public NotificationWeatherIntentService() {
-        super("NotificationWeatherIntentService");
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            try {
+                delay(seconds);
+                Thread.sleep(5000);       //Значение 5000 просто для теста, значение будет равнятся часу, чтобы каждый час сервис проверял дождь на ближайщие три часа.
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            stopSelf(msg.arg1);
+        }
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
+    @Override
+    public void onCreate() {
+        HandlerThread thread = new HandlerThread("NewService", Process.THREAD_PRIORITY_BACKGROUND);
+        thread.start();
+        serviceLooper = thread.getLooper();
+        serviceHandler = new ServiceHandler(serviceLooper);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Message msg = serviceHandler.obtainMessage();
+        msg.arg1 = startId;
+        serviceHandler.sendMessage(msg);
+        return START_STICKY;
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
     public static void startActionFoo(Context context, String param1) {
         Intent intent = new Intent(context, NotificationWeatherIntentService.class);
         intent.setAction(ACTION_RAIN);
         intent.putExtra(EXTRA_RAINNOTIFIER, param1);
         context.startService(intent);
-    }
-
-
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_RAIN.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_RAINNOTIFIER);
-                delay(seconds);
-            }
-        }
     }
 
     private void delay(int seconds) {
@@ -103,18 +122,8 @@ public class NotificationWeatherIntentService extends IntentService {
         notificationManager.notify(2, builder.build());
     }
 
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-        Intent intent = new Intent(getApplicationContext(), this.getClass());
-        intent.setPackage(getPackageName());
-        startService(intent);
-    }
-
-
     private boolean checkRainInBd() {
         String url2 = weatherSite.concat(CITY).concat(apiKey);
-
         try {
             final URL url = new URL(url2);
             HttpsURLConnection urlConnection = null;

@@ -43,4 +43,5 @@
     <string name="nightTempInit">Night: </string>
      <string name="notifications">Notifications: </string>
     <string name="switchNotifier">Rain (within 3 hours)</string>
+    <string name="textPug">empty</string>
 </resources>
