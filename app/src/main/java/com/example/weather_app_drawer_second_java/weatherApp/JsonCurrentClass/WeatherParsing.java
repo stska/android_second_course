@@ -10,15 +10,15 @@ import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.Wi
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Example {
+public class WeatherParsing {
 
     @SerializedName("coord")
     @Expose
     private Coord coord;
     @SerializedName("weather")
     @Expose
-    private List<Weather> weather;
-   // private List<Weather> weather = null;
+    private List<Weather> weather = null;
+    //private List<Weather> weather;
     @SerializedName("base")
     @Expose
     private String base;

@@ -11,31 +11,33 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.weather_app_drawer_second_java.OpenWeatherAPI;
 import com.example.weather_app_drawer_second_java.R;
-import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.Example;
+import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsing;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link CityWeatherDescription#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CityWeatherDescription extends Fragment implements PropertyChangeListener, LoaderManager.LoaderCallbacks<Example> {
+public class CityWeatherDescription extends Fragment implements PropertyChangeListener {
     private FragmentActivity myContext;
-
     private static final String ARG_PARAM2 = "param2";
     private String cityName = "";
     private String cityTmp = "";
@@ -50,9 +52,18 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
     private WeatherHistory history;
     private ProgressBar progressBar;
     private String weatherDscrp;
-    InitialFragment.OnItemClickedListener mListener;
+    private String units;
     private int mParam1;
     private String mParam2;
+    private String icon;
+    InitialFragment.OnItemClickedListener mListener;
+    private final String METRIC = "metric";
+    private final String IMPERIAL = "";
+    private final String weatherSite = "https://api.openweathermap.org";
+    private final String apiKey = "80b8b51878e4ae64fc72d800c1679d04";
+    private final String UNITS = "units";
+    private final String CELCSIUS = "celsius";
+    private OpenWeatherAPI openWeatherAPI;
 
     public CityWeatherDescription() {
         // Required empty public constructor
@@ -63,51 +74,11 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
         System.out.println("Changed property: " + propertyChangeEvent.getPropertyName() + "old :" + propertyChangeEvent.getOldValue() + "and new :" + propertyChangeEvent.getNewValue());
     }
 
-    @NonNull
-    @Override
-    public Loader<Example> onCreateLoader(int id, @Nullable Bundle argsm) {
-        return new LoaderClass(getContext(), mParam2, progressBar);
-    }
-
-    @Override
-    public void onLoadFinished(@NonNull Loader<Example> loader, Example data) {
-        weatherDscrp = data.getWeather().get(0).getDescription();
-        cityName = data.getName();
-        cityTmp = data.getMain().getTemp().toString();
-        cityHum = data.getMain().getHumidity().toString().concat("%");
-        cityWind = data.getWind().getSpeed().toString();
-        cityPres = data.getMain().getPressure().toString().concat("hPa");
-
-        history = new WeatherHistory(cityName, cityTmp, cityPres, weatherDscrp, cityHum);
-
-        if (!WeatherHistory.weatherHistories.isEmpty()) {
-            for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
-                System.out.println(WeatherHistory.weatherHistories.get(i).getCityName());
-            }
-        }
-        cityNameText.setText(cityName);
-        cityTempText.setText(cityTmp.concat("\u00B0"));
-        cityHumidText.setText(cityHum);
-        cityPressureText.setText(cityPres);
-        cityWindSpeedText.setText(cityWind.toString());
-        progressBar.setVisibility(ProgressBar.INVISIBLE);
-
-    }
-
-    @Override
-    public void onLoaderReset(@NonNull Loader<Example> loader) {
-        if (!WeatherHistory.weatherHistories.isEmpty()) {
-            for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
-                System.out.println(WeatherHistory.weatherHistories.get(i).getCityName());
-            }
-        }
-    }
 
     public static CityWeatherDescription newInstance(String mParam2) {
         CityWeatherDescription fragment = new CityWeatherDescription();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM2, mParam2);
-
         fragment.setArguments(args);
         return fragment;
     }
@@ -115,15 +86,18 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        units = SharedPreferencesClass.getData(getContext(),UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
+        initRetrofit();
         if (getArguments() != null) {
             mParam2 = getArguments().getString(ARG_PARAM2);
+            requestRetrofit(mParam2,units,apiKey);
         }
-        getLoaderManager().initLoader(1, null, this).forceLoad();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         final View view = inflater.inflate(R.layout.fragment_city_weather_description, container, false);
 
         progressBar = (ProgressBar) view.findViewById(R.id.progressBarWeatherDesc);
@@ -134,8 +108,8 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
         cityPressureText = (TextView) view.findViewById(R.id.pressureTextView);
         cityWindSpeedText = (TextView) view.findViewById(R.id.windSpeedTextView);
         initRecycleView(view);
-        return view;
 
+        return view;
     }
 
     private void initRecycleView(View view) {
@@ -159,5 +133,53 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
         myContext = (FragmentActivity) activity;
         super.onAttach(activity);
     }
+
+    private void initRetrofit(){
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(weatherSite).addConverterFactory(GsonConverterFactory.create()).build();
+        openWeatherAPI = retrofit.create(OpenWeatherAPI.class);
+    }
+    private void requestRetrofit(final String city,final String units,final String keyApi){
+
+        openWeatherAPI.loadData(city,units,keyApi).enqueue(new Callback<WeatherParsing>() {
+            @Override
+            public void onResponse(Call<WeatherParsing> call, Response<WeatherParsing> response) {
+                if(response.body() != null){
+                    //TODO
+                    String test = response.body().getMain().getTemp().toString();
+                    System.out.println(test);
+
+                    weatherDscrp = response.body().getWeather().get(0).getDescription();
+                    cityName = response.body().getName();
+                    cityTmp = response.body().getMain().getTemp().toString();
+                    cityHum = response.body().getMain().getHumidity().toString().concat("%");
+                    cityWind =response.body().getWind().getSpeed().toString();
+                    cityPres = response.body().getMain().getPressure().toString().concat("hPa");
+                    icon = response.body().getWeather().get(0).getIcon();
+
+                    history = new WeatherHistory(cityName, cityTmp, cityPres, weatherDscrp, cityHum,icon);
+
+                    if (!WeatherHistory.weatherHistories.isEmpty()) {
+                        for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
+                            System.out.println(WeatherHistory.weatherHistories.get(i).getCityName());
+                        }
+                    }
+                    cityNameText.setText(cityName);
+                    cityTempText.setText(cityTmp.concat("\u00B0"));
+                    cityHumidText.setText(cityHum);
+                    cityPressureText.setText(cityPres);
+                    cityWindSpeedText.setText(cityWind.toString());
+                    progressBar.setVisibility(ProgressBar.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<WeatherParsing> call, Throwable t) {
+                //TODO ERROR
+            }
+        });
+
+
+    }
+
 
 }

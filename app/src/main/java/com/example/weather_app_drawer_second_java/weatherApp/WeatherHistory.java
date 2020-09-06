@@ -10,15 +10,17 @@ public class WeatherHistory {
     private String weatherText;
     private String humText;
     private boolean favFlag;
+    private String icon;
 
     public static ArrayList<WeatherHistory> weatherHistories = new ArrayList<>();
 
-    public WeatherHistory(String cityName, String cityTmp, String cityPressure, String weatherText, String humText) {
+    public WeatherHistory(String cityName, String cityTmp, String cityPressure, String weatherText, String humText,String icon) {
         this.cityName = cityName;
         this.cityTmp = cityTmp;
         this.cityPressure = cityPressure;
         this.weatherText = weatherText;
         this.humText = humText;
+        this.icon = icon;
         favFlag = false;
         weatherHistories.add(this);
     }
@@ -50,4 +52,5 @@ public class WeatherHistory {
     public String getHumText() {
         return humText;
     }
+    public String getIcon() { return icon;}
 }

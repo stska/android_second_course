@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class SlideshowFragment extends Fragment {
     private Switch rainNotificationSwitch;
     static final String BROADCAST_ACT = "com.example.weather_app_drawer_second_java.service.done";
 
+
     private BroadcastReceiver weatherUpload = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -57,6 +59,8 @@ public class SlideshowFragment extends Fragment {
                 ViewModelProviders.of(this).get(SlideshowViewModel.class);
 
         final View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
+
+
         rainNotificationSwitch = (Switch) root.findViewById(R.id.rainNotifiication);
         if (rainNotificationSwitch != null) {
             rainNotificationSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
