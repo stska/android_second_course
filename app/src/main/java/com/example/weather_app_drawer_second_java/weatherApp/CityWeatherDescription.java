@@ -20,7 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.OpenWeatherAPI;
 import com.example.weather_app_drawer_second_java.R;
+
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsing;
+import com.example.weather_app_drawer_second_java.weatherApp.database.SingltoneDB;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDatabaseRoom;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherSourceForDB;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDaoInterface;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherEntity;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -64,6 +70,12 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
     private final String UNITS = "units";
     private final String CELCSIUS = "celsius";
     private OpenWeatherAPI openWeatherAPI;
+    private WeatherDatabaseRoom weatherDatabaseRoom;
+    private WeatherSourceForDB weatherSourceForDB;
+    private WeatherDaoInterface weatherDaoInterface;
+    private final String CITY = "city";
+    private String country;
+
 
     public CityWeatherDescription() {
         // Required empty public constructor
@@ -86,12 +98,15 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        units = SharedPreferencesClass.getData(getContext(),UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
+        units = SharedPreferencesClass.getData(getContext(), UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
+        weatherDaoInterface = SingltoneDB.getInstance(getContext()).getDb();
+        weatherSourceForDB = new WeatherSourceForDB((weatherDaoInterface));
         initRetrofit();
         if (getArguments() != null) {
             mParam2 = getArguments().getString(ARG_PARAM2);
-            requestRetrofit(mParam2,units,apiKey);
+            requestRetrofit(mParam2, units, apiKey);
         }
+
     }
 
     @Override
@@ -113,6 +128,8 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
     }
 
     private void initRecycleView(View view) {
+
+
         RecyclerView recyclerView = view.findViewById(R.id.weatherRecyleViewFiveDays);
         recyclerView.setHasFixedSize(true);
         recyclerView.setVisibility(View.GONE); //так как недоделана передача данных и чтобы не оставлять их пустыми на экране, пока закоментированно
@@ -134,35 +151,45 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
         super.onAttach(activity);
     }
 
-    private void initRetrofit(){
+    private void initRetrofit() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(weatherSite).addConverterFactory(GsonConverterFactory.create()).build();
         openWeatherAPI = retrofit.create(OpenWeatherAPI.class);
     }
-    private void requestRetrofit(final String city,final String units,final String keyApi){
 
-        openWeatherAPI.loadData(city,units,keyApi).enqueue(new Callback<WeatherParsing>() {
+    private void requestRetrofit(final String city, final String units, final String keyApi) {
+
+        openWeatherAPI.loadData(city, units, keyApi).enqueue(new Callback<WeatherParsing>() {
             @Override
             public void onResponse(Call<WeatherParsing> call, Response<WeatherParsing> response) {
-                if(response.body() != null){
-                    //TODO
-                    String test = response.body().getMain().getTemp().toString();
-                    System.out.println(test);
-
+                if (response.body() != null) {
                     weatherDscrp = response.body().getWeather().get(0).getDescription();
                     cityName = response.body().getName();
+                    SharedPreferencesClass.deleteData(getContext(), CITY);
+                    SharedPreferencesClass.insertData(getContext(), CITY, cityName);
                     cityTmp = response.body().getMain().getTemp().toString();
                     cityHum = response.body().getMain().getHumidity().toString().concat("%");
-                    cityWind =response.body().getWind().getSpeed().toString();
+                    cityWind = response.body().getWind().getSpeed().toString();
                     cityPres = response.body().getMain().getPressure().toString().concat("hPa");
                     icon = response.body().getWeather().get(0).getIcon();
+                    country = response.body().getSys().getCountry();
+                    ;
 
-                    history = new WeatherHistory(cityName, cityTmp, cityPres, weatherDscrp, cityHum,icon);
-
+                    history = new WeatherHistory(cityName, cityTmp, cityPres, weatherDscrp, cityHum, icon);
                     if (!WeatherHistory.weatherHistories.isEmpty()) {
                         for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
                             System.out.println(WeatherHistory.weatherHistories.get(i).getCityName());
                         }
                     }
+                    WeatherEntity weatherEntity = new WeatherEntity();
+                    weatherEntity.cityName = cityName;
+                    weatherEntity.countryName = country;
+                    weatherEntity.humidityName = cityHum;
+                    weatherEntity.pressureName = cityPres;
+                    weatherEntity.temperatureName = cityTmp;
+                    weatherEntity.icon = icon;
+                    weatherEntity.favourite = false;
+                    weatherSourceForDB.addWeather(weatherEntity);
+
                     cityNameText.setText(cityName);
                     cityTempText.setText(cityTmp.concat("\u00B0"));
                     cityHumidText.setText(cityHum);

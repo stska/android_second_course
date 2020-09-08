@@ -27,43 +27,34 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="50dp"
+            android:layout_marginStart="30dp"
             android:layout_marginTop="15dp"
-            android:layout_marginEnd="50dp">
+            android:layout_marginEnd="30dp">
 
             <ImageView
                 android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center|right"
                 android:layout_marginTop="20dp"
                 android:src="@drawable/buildings" />
 
-            <TextView
+            <!-- <TextView
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|right"
+                android:layout_gravity="center|left"
                 android:layout_marginEnd="10dp"
                 android:text="@string/nightTempInit"
                 android:textColor="#000000"
-                android:textSize="24sp" />
-
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:text="@string/dayTempInit"
-                android:textColor="#221E1E"
-                android:textSize="24sp" />
+                android:textSize="24sp" />  -->
 
             <TextView
                 android:id="@+id/cityInitTxt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|top"
+                android:layout_gravity="center|top|left"
+                android:layout_marginLeft="15dp"
                 android:layout_marginBottom="5dp"
                 android:text="City"
                 android:textColor="#3A2929"
@@ -74,7 +65,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|left"
-                android:layout_marginStart="10dp"
+                android:layout_marginStart="75dp"
                 android:text="TextView"
                 android:textSize="18sp" />
 
@@ -82,11 +73,23 @@
                 android:id="@+id/nightTempInt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
+                android:layout_gravity="bottom"
+                android:layout_marginStart="15dp"
                 android:layout_marginEnd="10dp"
-                android:layout_marginBottom="30dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:scrollHorizontally="false"
                 android:text="TextView"
                 android:textSize="18sp" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center|start|left"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/thermometer" />
 
         </androidx.cardview.widget.CardView>
 

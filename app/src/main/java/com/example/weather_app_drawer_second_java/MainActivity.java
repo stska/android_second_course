@@ -14,12 +14,15 @@ import android.widget.CursorAdapter;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
+
+import com.example.weather_app_drawer_second_java.weatherApp.App;
 import com.example.weather_app_drawer_second_java.weatherApp.CityWeatherDescription;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsingVersionTwo;
 import com.example.weather_app_drawer_second_java.weatherApp.SingltoneListOfCities;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -29,6 +32,7 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import java.io.IOException;
 
 
@@ -42,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        App.getContext();
         try {
             singltoneListOfCities = SingltoneListOfCities.getInstance(getResources());
         } catch (IOException e) {
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             assert query != null;
             Toast.makeText(MainActivity.this, query, Toast.LENGTH_LONG).show();
-        } else if(Intent.ACTION_VIEW.equals(intent.getAction())){
+        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             System.out.println(intent.getData());
 
         }
@@ -108,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 if (compareQueryToList(s, singltoneListOfCities.example2)) {
-                   goTo(s);
+                    goTo(s);
                     clearTab(searchView);
                     return true;
                 }
@@ -131,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onSuggestionClick(int i) {
                 Cursor cursor = (Cursor) mAdapter.getItem(i);
-                if(cursor != null){
+                if (cursor != null) {
                     goTo(cursor.getString(cursor.getColumnIndex("cityName")));
                 }
                 cursor.close();
@@ -195,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
             getFragmentManager().popBackStack();
         }
     }
-    public void clearTab(SearchView searchView){
+
+    public void clearTab(SearchView searchView) {
         searchView.clearFocus();
         searchView.setQuery("", false);
         searchView.setIconified(true);

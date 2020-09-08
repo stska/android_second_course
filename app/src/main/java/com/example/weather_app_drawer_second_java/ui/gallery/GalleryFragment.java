@@ -16,12 +16,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.R;
-import com.example.weather_app_drawer_second_java.weatherApp.TestRecycleViewAdapter;
+import com.example.weather_app_drawer_second_java.weatherApp.HistoryRecycleViewAdapter;
 
 import com.example.weather_app_drawer_second_java.weatherApp.WeatherHistory;
+import com.example.weather_app_drawer_second_java.weatherApp.database.SingltoneDB;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherSourceForDB;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDaoInterface;
 
 
 public class GalleryFragment extends Fragment {
+    WeatherDaoInterface weatherDaoInterface;
+    WeatherSourceForDB weatherSourceForDB;
 
     private GalleryViewModel galleryViewModel;
 
@@ -53,13 +58,16 @@ public class GalleryFragment extends Fragment {
     private FragmentActivity myContext;
 
     private void initRecycleView(View view) {
+         WeatherDaoInterface daoInterface = SingltoneDB.getInstance(getContext()).getDb();
+         weatherSourceForDB = new WeatherSourceForDB(daoInterface);
+
         RecyclerView recyclerView = view.findViewById(R.id.cityWeatherRecycleView);
         recyclerView.setHasFixedSize(true);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(myContext);
         recyclerView.setLayoutManager(layoutManager);
 
-        TestRecycleViewAdapter adapter = new TestRecycleViewAdapter(WeatherHistory.weatherHistories, getContext());
+        HistoryRecycleViewAdapter adapter = new HistoryRecycleViewAdapter(WeatherHistory.weatherHistories, getContext(),weatherSourceForDB);
         recyclerView.setAdapter(adapter);
     }
 }
