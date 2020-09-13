@@ -1,18 +1,12 @@
 package com.example.weather_app_drawer_second_java;
 
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.net.ConnectivityManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.BaseColumns;
-import android.util.Log;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.Menu;
@@ -25,16 +19,10 @@ import com.example.weather_app_drawer_second_java.weatherApp.App;
 import com.example.weather_app_drawer_second_java.weatherApp.CityWeatherDescription;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsingVersionTwo;
 import com.example.weather_app_drawer_second_java.weatherApp.SingltoneListOfCities;
-import com.example.weather_app_drawer_second_java.weatherApp.SystemMessageReceiver;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
@@ -51,21 +39,14 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private SingltoneListOfCities singltoneListOfCities;
+    SingltoneListOfCities singltoneListOfCities;
     private FragmentActivity myContext;
     private SimpleCursorAdapter mAdapter;
-    private SystemMessageReceiver systemMessageReceiver;
-    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getContext();
-        systemMessageReceiver = new SystemMessageReceiver();
-        initGetToken();
-        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-        this.registerReceiver(systemMessageReceiver, filter);
-        initNotifChannel();
         try {
             singltoneListOfCities = SingltoneListOfCities.getInstance(getResources());
         } catch (IOException e) {
@@ -115,20 +96,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void initGetToken() {
-        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                if (!task.isSuccessful()) {
-                    Log.w("PushMessage", "fail");
-                    task.getException();
-                    return;
-                }
-                token = task.getResult().getToken();
-                System.out.println(token);
-            }
-        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -227,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (count == 0) {
             super.onBackPressed();
-            recreate();
+            recreate();     //если вы это видите, то подскажите насколько опасно так делать? незнал, как еще можно перерисовать активити не делая лисенеров и.т.д, так как уже время поздно.
         } else {
             getFragmentManager().popBackStack();
         }
@@ -239,13 +206,5 @@ public class MainActivity extends AppCompatActivity {
         searchView.setIconified(true);
     }
 
-    private void initNotifChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            int importance = NotificationManager.IMPORTANCE_LOW;
-            NotificationChannel channel = new NotificationChannel("2", "name", importance);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
 
 }

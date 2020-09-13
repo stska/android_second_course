@@ -9,16 +9,19 @@ public class SingltoneDB {
     private static SingltoneDB instance;
     private WeatherDatabaseRoom db;
 
-    private SingltoneDB(Context context){
+    private SingltoneDB(Context context) {
         db = Room.databaseBuilder(context, WeatherDatabaseRoom.class, "weather").allowMainThreadQueries().build();
     }
 
-    public static SingltoneDB getInstance(Context context){
-        if(instance == null){
+    public static SingltoneDB getInstance(Context context) {
+        if (instance == null) {
             instance = new SingltoneDB(context);
         }
-            return instance;
+        return instance;
     }
-    public WeatherDaoInterface getDb() {return db.getWeather();}
+
+    public WeatherDaoInterface getDb() {
+        return db.getWeather();
+    }
 
 }
