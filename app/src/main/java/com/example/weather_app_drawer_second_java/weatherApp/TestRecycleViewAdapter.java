@@ -26,7 +26,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecycleViewAdapter.ViewHolder> {
+public class TestRecycleViewAdapter extends RecyclerView.Adapter<TestRecycleViewAdapter.ViewHolder> {
     private final String FAV_FLAG = "favBtnState";
     private final String BTN_STATE_CLICKED = "clicked";
     private final String BTN_STATE_CLEAR = "not_clicked";
@@ -54,7 +54,7 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
     }
 
 
-    public HistoryRecycleViewAdapter(ArrayList<WeatherHistory> dataSource, Context mContext, WeatherSourceForDB weatherSourceForDB) {
+    public TestRecycleViewAdapter(ArrayList<WeatherHistory> dataSource, Context mContext,WeatherSourceForDB weatherSourceForDB) {
         this.dataSource = dataSource;
         this.mContext = mContext;
         Fresco.initialize(mContext);
@@ -128,7 +128,7 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
 
     @NonNull
     @Override
-    public HistoryRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
+    public TestRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.test_weather_item, parent, false);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,7 +165,7 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HistoryRecycleViewAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull TestRecycleViewAdapter.ViewHolder holder, int position) {
          List <WeatherEntity> weatherEntities = weatherSourceForDB.getWeatherEntityList();
         WeatherEntity weatherEntity = weatherEntities.get(position);
 
