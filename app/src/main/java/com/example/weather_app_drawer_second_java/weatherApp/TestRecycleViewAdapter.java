@@ -16,7 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.R;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDatabaseRoom;
 import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherSourceForDB;
+import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDaoInterface;
 import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherEntity;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -24,7 +26,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecycleViewAdapter.ViewHolder> {
+public class TestRecycleViewAdapter extends RecyclerView.Adapter<TestRecycleViewAdapter.ViewHolder> {
     private final String FAV_FLAG = "favBtnState";
     private final String BTN_STATE_CLICKED = "clicked";
     private final String BTN_STATE_CLEAR = "not_clicked";
@@ -33,7 +35,10 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
     private Uri uri;
     private String site = "http://openweathermap.org/img/wn/";
     private String type = "@2x.png";
+    private WeatherDaoInterface weatherDaoInterface;
+    private WeatherDatabaseRoom weatherDatabaseRoom;
     private WeatherSourceForDB weatherSourceForDB;
+  //  List <WeatherEntity> weatherEntities;
 
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
@@ -49,7 +54,7 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
     }
 
 
-    public HistoryRecycleViewAdapter(ArrayList<WeatherHistory> dataSource, Context mContext, WeatherSourceForDB weatherSourceForDB) {
+    public TestRecycleViewAdapter(ArrayList<WeatherHistory> dataSource, Context mContext,WeatherSourceForDB weatherSourceForDB) {
         this.dataSource = dataSource;
         this.mContext = mContext;
         Fresco.initialize(mContext);
@@ -68,7 +73,7 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            drawImage = (SimpleDraweeView) itemView.findViewById(R.id.my_image_view);
+            drawImage = (SimpleDraweeView)itemView.findViewById(R.id.my_image_view);
             weatherText = itemView.findViewById(R.id.weatherInfo);
             pressureText = itemView.findViewById(R.id.pressureText);
             tempText = itemView.findViewById(R.id.temperatureText);
@@ -123,7 +128,7 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
 
     @NonNull
     @Override
-    public HistoryRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
+    public TestRecycleViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, final int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.test_weather_item, parent, false);
         v.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,7 +150,7 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         Toast.makeText(mContext, "Deleted", Toast.LENGTH_SHORT).show();
-                                        List<WeatherEntity> weatherEntities = weatherSourceForDB.getWeatherEntityList();
+                                        List <WeatherEntity> weatherEntities = weatherSourceForDB.getWeatherEntityList();
                                         WeatherEntity weatherEntity = weatherEntities.get(position);
                                         weatherSourceForDB.deleteWeatherLikeObject(weatherEntity);
                                         notifyDataSetChanged();
@@ -160,8 +165,8 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
     }
 
     @Override
-    public void onBindViewHolder(@NonNull HistoryRecycleViewAdapter.ViewHolder holder, int position) {
-        List<WeatherEntity> weatherEntities = weatherSourceForDB.getWeatherEntityList();
+    public void onBindViewHolder(@NonNull TestRecycleViewAdapter.ViewHolder holder, int position) {
+         List <WeatherEntity> weatherEntities = weatherSourceForDB.getWeatherEntityList();
         WeatherEntity weatherEntity = weatherEntities.get(position);
 
         holder.getTextView().setText(weatherEntity.cityName);
@@ -173,11 +178,13 @@ public class HistoryRecycleViewAdapter extends RecyclerView.Adapter<HistoryRecyc
         uri = Uri.parse(site.concat(weatherEntity.icon).concat(type));
         drawImage.setImageURI(uri);
         holder.addToFavBtn.setImageResource(R.drawable.removefromfavorites);
-        if (weatherEntity.favourite) {
-            holder.addToFavBtn.setImageResource(R.drawable.addtofavorites);
-        } else holder.addToFavBtn.setImageResource(R.drawable.removefromfavorites);
+         if(weatherEntity.favourite){
+             holder.addToFavBtn.setImageResource(R.drawable.addtofavorites);
+         }else holder.addToFavBtn.setImageResource(R.drawable.removefromfavorites);
 
     }
+
+
 
 
     @Override
