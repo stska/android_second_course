@@ -32,8 +32,5 @@ public interface WeatherDaoInterface {
     @Query("SELECT COUNT() FROM weather")
     long getCountWeather();
 
-   @Query("SELECT favourite  FROM weather WHERE id = :id")
-    boolean getFavourite(long id);
-   @Query("UPDATE WEATHER SET favourite = :newFavourite WHERE id = :id")
-    void updateFavourite(long id,boolean newFavourite);
+
 }
