@@ -39,9 +39,9 @@
     <string name="button">КНОПКА</string>
     <string name="yes">Да</string>
     <string name="no">Нет</string>
-    <string name="dayTempInit">Temperature: </string>
+     <string name="dayTempInit">Temperature: </string>
     <string name="nightTempInit">Weather: </string>
-    <string name="notifications">Notifications: </string>
+     <string name="notifications">Notifications: </string>
     <string name="switchNotifier">Rain (within 3 hours)</string>
     <string name="textPug">empty</string>
 </resources>
