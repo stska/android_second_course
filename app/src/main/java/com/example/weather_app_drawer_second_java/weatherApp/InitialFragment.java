@@ -79,7 +79,6 @@ public class InitialFragment extends Fragment implements PropertyChangeListener 
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static InitialFragment newInstance(String param1, String param2) {
 
         InitialFragment fragment = new InitialFragment();
