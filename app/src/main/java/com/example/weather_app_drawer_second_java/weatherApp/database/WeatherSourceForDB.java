@@ -5,43 +5,44 @@ import java.util.List;
 public class WeatherSourceForDB {
     private List<WeatherEntity> weatherEntityList;
     public final WeatherDaoInterface weatherDaoInterface;
-
-    public WeatherSourceForDB(WeatherDaoInterface weatherDaoInterface) {
+    public WeatherSourceForDB(WeatherDaoInterface weatherDaoInterface){
         this.weatherDaoInterface = weatherDaoInterface;
     }
-
-    public List<WeatherEntity> getWeatherEntityList() {
-        if (weatherEntityList == null) {
+    public List<WeatherEntity> getWeatherEntityList(){
+        if(weatherEntityList == null){
             LoadWeatherData();
         }
         return weatherEntityList;
     }
-
-    public void LoadWeatherData() {
+    public void LoadWeatherData(){
         weatherEntityList = weatherDaoInterface.getAllWeather();
     }
-
-    public void addWeather(WeatherEntity weatherEntity) {
+    public void addWeather(WeatherEntity weatherEntity){
         weatherDaoInterface.insertWeather(weatherEntity);
         LoadWeatherData();
     }
-
-    public long getCountWeather() {
+    public long getCountWeather(){
         return weatherDaoInterface.getCountWeather();
     }
 
-    public void updateWeather(WeatherEntity weatherEntity) {
+    public void updateWeather(WeatherEntity weatherEntity){
         weatherDaoInterface.updateWeather(weatherEntity);
         LoadWeatherData();
     }
-
-    public void removeWeather(long id) {
+    public void removeWeather(long id){
         weatherDaoInterface.deleteWeatherById(id);
         LoadWeatherData();
     }
-
-    public void deleteWeatherLikeObject(WeatherEntity weatherEntity) {
+    public void deleteWeatherLikeObject(WeatherEntity weatherEntity){
         weatherDaoInterface.deleteWeather(weatherEntity);
         LoadWeatherData();
     }
+    public void getFavourite(long id){
+        weatherDaoInterface.getFavourite(id);
+    }
+    public void updateFavourite(long id,boolean favourite){
+        weatherDaoInterface.updateFavourite(id, favourite);
+        LoadWeatherData();
+    }
+
 }
