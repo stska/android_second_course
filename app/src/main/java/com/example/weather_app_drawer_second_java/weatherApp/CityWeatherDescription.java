@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.OpenWeatherAPI;
 import com.example.weather_app_drawer_second_java.R;
+
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsing;
 import com.example.weather_app_drawer_second_java.weatherApp.database.SingltoneDB;
 import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDatabaseRoom;
@@ -97,13 +98,13 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        units = SharedPreferencesClass.getData(getContext(),UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
+        units = SharedPreferencesClass.getData(getContext(), UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
         weatherDaoInterface = SingltoneDB.getInstance(getContext()).getDb();
         weatherSourceForDB = new WeatherSourceForDB((weatherDaoInterface));
         initRetrofit();
         if (getArguments() != null) {
             mParam2 = getArguments().getString(ARG_PARAM2);
-            requestRetrofit(mParam2,units,apiKey);
+            requestRetrofit(mParam2, units, apiKey);
         }
 
     }
@@ -150,28 +151,30 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
         super.onAttach(activity);
     }
 
-    private void initRetrofit(){
+    private void initRetrofit() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(weatherSite).addConverterFactory(GsonConverterFactory.create()).build();
         openWeatherAPI = retrofit.create(OpenWeatherAPI.class);
     }
-    private void requestRetrofit(final String city,final String units,final String keyApi){
 
-        openWeatherAPI.loadData(city,units,keyApi).enqueue(new Callback<WeatherParsing>() {
+    private void requestRetrofit(final String city, final String units, final String keyApi) {
+
+        openWeatherAPI.loadData(city, units, keyApi).enqueue(new Callback<WeatherParsing>() {
             @Override
             public void onResponse(Call<WeatherParsing> call, Response<WeatherParsing> response) {
-                if(response.body() != null){
+                if (response.body() != null) {
                     weatherDscrp = response.body().getWeather().get(0).getDescription();
                     cityName = response.body().getName();
-                    SharedPreferencesClass.deleteData(getContext(),CITY);
-                    SharedPreferencesClass.insertData(getContext(),CITY,cityName);
+                    SharedPreferencesClass.deleteData(getContext(), CITY);
+                    SharedPreferencesClass.insertData(getContext(), CITY, cityName);
                     cityTmp = response.body().getMain().getTemp().toString();
                     cityHum = response.body().getMain().getHumidity().toString().concat("%");
-                    cityWind =response.body().getWind().getSpeed().toString();
+                    cityWind = response.body().getWind().getSpeed().toString();
                     cityPres = response.body().getMain().getPressure().toString().concat("hPa");
                     icon = response.body().getWeather().get(0).getIcon();
-                    country = response.body().getSys().getCountry();;
+                    country = response.body().getSys().getCountry();
+                    ;
 
-                    history = new WeatherHistory(cityName, cityTmp, cityPres, weatherDscrp, cityHum,icon);
+                    history = new WeatherHistory(cityName, cityTmp, cityPres, weatherDscrp, cityHum, icon);
                     if (!WeatherHistory.weatherHistories.isEmpty()) {
                         for (int i = 0; i < WeatherHistory.weatherHistories.size(); i++) {
                             System.out.println(WeatherHistory.weatherHistories.get(i).getCityName());
@@ -186,7 +189,6 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
                     weatherEntity.icon = icon;
                     weatherEntity.favourite = false;
                     weatherSourceForDB.addWeather(weatherEntity);
-
 
                     cityNameText.setText(cityName);
                     cityTempText.setText(cityTmp.concat("\u00B0"));
