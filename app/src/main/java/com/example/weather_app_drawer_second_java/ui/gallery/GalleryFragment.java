@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.R;
-import com.example.weather_app_drawer_second_java.weatherApp.TestRecycleViewAdapter;
+import com.example.weather_app_drawer_second_java.weatherApp.HistoryRecycleViewAdapter;
 
 import com.example.weather_app_drawer_second_java.weatherApp.WeatherHistory;
 import com.example.weather_app_drawer_second_java.weatherApp.database.SingltoneDB;
@@ -67,7 +67,7 @@ public class GalleryFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(myContext);
         recyclerView.setLayoutManager(layoutManager);
 
-        TestRecycleViewAdapter adapter = new TestRecycleViewAdapter(WeatherHistory.weatherHistories, getContext(),weatherSourceForDB);
+        HistoryRecycleViewAdapter adapter = new HistoryRecycleViewAdapter(WeatherHistory.weatherHistories, getContext(),weatherSourceForDB);
         recyclerView.setAdapter(adapter);
     }
 }
