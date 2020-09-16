@@ -20,6 +20,8 @@ import android.widget.CursorAdapter;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
+
+import com.example.weather_app_drawer_second_java.weatherApp.App;
 import com.example.weather_app_drawer_second_java.weatherApp.CityWeatherDescription;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsingVersionTwo;
 import com.example.weather_app_drawer_second_java.weatherApp.SingltoneListOfCities;
@@ -58,16 +60,29 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initialization();
-
+        App.getContext();
         systemMessageReceiver = new SystemMessageReceiver();
+        initGetToken();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         this.registerReceiver(systemMessageReceiver, filter);
-
+        initNotifChannel();
+        try {
+            singltoneListOfCities = SingltoneListOfCities.getInstance(getResources());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -78,6 +93,16 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            assert query != null;
+            Toast.makeText(MainActivity.this, query, Toast.LENGTH_LONG).show();
+        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            System.out.println(intent.getData());
+
+        }
 
         final String[] from = new String[]{"cityName"};
         final int[] to = new int[]{android.R.id.text1};
@@ -220,15 +245,6 @@ public class MainActivity extends AppCompatActivity {
             int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel("2", "name", importance);
             notificationManager.createNotificationChannel(channel);
-        }
-    }
-    private void initialization(){
-        initGetToken();
-        initNotifChannel();
-        try {
-            singltoneListOfCities = SingltoneListOfCities.getInstance(getResources());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
