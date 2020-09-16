@@ -39,15 +39,6 @@
                 android:layout_marginTop="20dp"
                 android:src="@drawable/buildings" />
 
-            <!-- <TextView
-                android:id="@+id/textView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|left"
-                android:layout_marginEnd="10dp"
-                android:text="@string/nightTempInit"
-                android:textColor="#000000"
-                android:textSize="24sp" />  -->
 
             <TextView
                 android:id="@+id/cityInitTxt"
@@ -103,47 +94,26 @@
             android:textColor="#0E0E0E"
             android:textSize="24sp" />
 
-      <!--  <com.example.weather_app_drawer_second_java.ui.home.ThermometerView
-            android:layout_width="150dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:level="70" />  -->
+        <ProgressBar
+            android:id="@+id/progressBarLocation"
+            style="@android:style/Widget.Holo.Light.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginEnd="25dp"
+            android:background="#2DC1DFC5"
+            android:foregroundTint="#F41111"
+            android:progressTint="#775ECC45"
+            android:indeterminate="false"
+            android:indeterminateOnly="false"
+            android:progressBackgroundTintMode="multiply"
+            />
 
-        <!--
-
-
-         <SearchView
-             android:id="@+id/searchViewId"
-             style="@android:style/Widget.Material.SearchView"
-             android:layout_width="fill_parent"
-             android:layout_height="wrap_content"
-             android:layout_marginLeft="50dp"
-             android:layout_marginTop="50dp"
-             android:layout_marginRight="50dp"
-             android:layout_marginBottom="50dp"
-             android:background="#E8F3E3"
-             android:forceDarkAllowed="true"
-             android:imeOptions="actionSearch"
-             android:queryHint="Input city"
-             app:actionViewClass="android.support.v7.widget.SearchView">
-
-         </SearchView>       -->
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/favCitiesRecycleView"
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
     </LinearLayout>
 
-    <!-- <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cityWeatherRecycleView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="200dp"
-        android:paddingBottom="20dp" />   -->
 </FrameLayout>

@@ -139,8 +139,6 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        TempRecycleVoewAdapter adapter = new TempRecycleVoewAdapter();
-        recyclerView.setAdapter(adapter);
 
     }
 
