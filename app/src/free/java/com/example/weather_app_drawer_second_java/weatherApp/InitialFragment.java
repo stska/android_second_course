@@ -1,5 +1,6 @@
 package com.example.weather_app_drawer_second_java.weatherApp;
 
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
@@ -18,18 +18,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.weather_app_drawer_second_java.OpenWeatherAPI;
 import com.example.weather_app_drawer_second_java.R;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsing;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsingVersionTwo;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.security.Policy;
 import java.text.NumberFormat;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,8 +35,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class InitialFragment extends Fragment implements PropertyChangeListener {
-    OnItemClickedListener mListener;
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
     private static String flat = "";
+    private final String METRIC = "metric";
+    private final String IMPERIAL = "";
+    private final String weatherSite = "https://api.openweathermap.org";
+    private final String apiKey = "80b8b51878e4ae64fc72d800c1679d04";
+    private final String UNITS = "units";
+    private final String CELCSIUS = "celsius";
     private WeatherParsingVersionTwo[] example2s;
     private CardView cardView;
     private TextView dayTmp;
@@ -48,37 +52,21 @@ public class InitialFragment extends Fragment implements PropertyChangeListener 
     private FragmentActivity myContext;
     private SingltoneListOfCities singltoneListOfCities;
     private TextView favTitle;
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
     private String mParam1;
     private String mParam2;
-    private final String METRIC = "metric";
-    private final String IMPERIAL = "";
-    private final String weatherSite = "https://api.openweathermap.org";
-    private final String apiKey = "80b8b51878e4ae64fc72d800c1679d04";
-    private final String UNITS = "units";
-    private final String CELCSIUS = "celsius";
     private OpenWeatherAPI openWeatherAPI;
     private String units;
+    private final static String NO_DATA = "opppss, there is no data found";
 
-    @Override
-    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
-        System.out.println("Changed property: " + propertyChangeEvent.getPropertyName() + " [old -> "
-                + propertyChangeEvent.getOldValue() + "] | [new -> " + propertyChangeEvent.getNewValue() + "]");
-        flat = propertyChangeEvent.getNewValue().toString();
-    }
     public InitialFragment(Manager manager) {
         manager.addChangeListener(this);
-    }
-
-    public interface OnItemClickedListener {
-        public void OnItemClicked(Policy.Parameters params);
     }
 
     public InitialFragment() {
         // Required empty public constructor
     }
 
+    // TODO: Rename and change types and number of parameters
     public static InitialFragment newInstance(String param1, String param2) {
 
         InitialFragment fragment = new InitialFragment();
@@ -88,7 +76,15 @@ public class InitialFragment extends Fragment implements PropertyChangeListener 
         fragment.setArguments(args);
         return fragment;
     }
-    private void initRetrofit(){
+
+    @Override
+    public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+        System.out.println("Changed property: " + propertyChangeEvent.getPropertyName() + " [old -> "
+                + propertyChangeEvent.getOldValue() + "] | [new -> " + propertyChangeEvent.getNewValue() + "]");
+        flat = propertyChangeEvent.getNewValue().toString();
+    }
+
+    private void initRetrofit() {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(weatherSite).addConverterFactory(GsonConverterFactory.create()).build();
         openWeatherAPI = retrofit.create(OpenWeatherAPI.class);
     }
@@ -97,18 +93,19 @@ public class InitialFragment extends Fragment implements PropertyChangeListener 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Resources res = getResources();
-        units = SharedPreferencesClass.getData(getContext(),UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
+        units = SharedPreferencesClass.getData(getContext(), UNITS).contains(CELCSIUS) ? METRIC : IMPERIAL;
         try {
             singltoneListOfCities = SingltoneListOfCities.getInstance(res);
         } catch (IOException e) {
             e.printStackTrace();
         }
         initRetrofit();
-        requestRetrofit(SharedPreferencesClass.getData(getContext(),"city"),units,apiKey);
+        requestRetrofit(SharedPreferencesClass.getData(getContext(), "city"), units, apiKey);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
@@ -147,7 +144,8 @@ public class InitialFragment extends Fragment implements PropertyChangeListener 
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
+         String history = SharedPreferencesClass.getData(getContext(), "city").contains(NO_DATA) ? "There is no search history" :SharedPreferencesClass.getData(getContext(), "city");
+         Toast.makeText(getContext(), history, Toast.LENGTH_LONG);
     }
 
     @Override
@@ -155,7 +153,7 @@ public class InitialFragment extends Fragment implements PropertyChangeListener 
         super.onResume();
         View view = getView();
         String mode = SharedPreferencesClass.getData(getContext(), "mySetting");
-        if (!mode.contains("opppss, there is no data found")) {
+        if (!mode.contains(NO_DATA)) {
 
             if (view != null) {
                 view.findViewById(R.id.initialFragmentId).setBackgroundColor(Color.rgb(173, 181, 189));
@@ -176,33 +174,38 @@ public class InitialFragment extends Fragment implements PropertyChangeListener 
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
-    private void requestRetrofit(final String city,final String units,final String keyApi){
 
-        openWeatherAPI.loadData(city,units,keyApi).enqueue(new Callback<WeatherParsing>() {
-            @Override
-            public void onResponse(Call<WeatherParsing> call, Response<WeatherParsing> response) {
-                if(response.body() != null){
-                    NumberFormat nf = NumberFormat.getCurrencyInstance();
-                    nf.setMaximumFractionDigits(0);
-                    String cutOffTemp = nf.format(response.body().getMain().getTemp()).replaceAll("[$]","");
-                    dayTmp.setText(cutOffTemp.concat("\u00B0"));
-                    dayTmp.setVisibility(View.VISIBLE);
-                    nightTmp.setText(response.body().getWeather().get(0).getDescription());
-                   nightTmp.setVisibility(View.VISIBLE);
-                    cityInitTxt.setText(response.body().getName());
-                    cityInitTxt.setVisibility(View.VISIBLE);
+    private void requestRetrofit(final String city, final String units, final String keyApi) {
+        if(!city.contains(NO_DATA)) {
+            openWeatherAPI.loadData(city, units, keyApi).enqueue(new Callback<WeatherParsing>() {
+                @Override
+                public void onResponse(Call<WeatherParsing> call, Response<WeatherParsing> response) {
+                    if (response.body() != null) {
+                        NumberFormat nf = NumberFormat.getCurrencyInstance();
+                        nf.setMaximumFractionDigits(0);
+                        String cutOffTemp = nf.format(response.body().getMain().getTemp()).replaceAll("[$]", "");
+                        dayTmp.setText(cutOffTemp.concat("\u00B0"));
+                        dayTmp.setVisibility(View.VISIBLE);
+                        nightTmp.setText(response.body().getWeather().get(0).getDescription());
+                        nightTmp.setVisibility(View.VISIBLE);
+                        cityInitTxt.setText(response.body().getName());
+                        cityInitTxt.setVisibility(View.VISIBLE);
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<WeatherParsing> call, Throwable t) {
-                //TODO ERROR
-            }
-        });
+                @Override
+                public void onFailure(Call<WeatherParsing> call, Throwable t) {
+                    //TODO ERROR
+                }
+            });
+        }
 
 
     }
 
+    public interface OnItemClickedListener {
+        public void OnItemClicked(Policy.Parameters params);
+    }
 
 }
 

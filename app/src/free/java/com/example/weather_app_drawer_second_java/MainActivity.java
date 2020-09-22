@@ -19,17 +19,19 @@ import android.view.Menu;
 import android.widget.CursorAdapter;
 import android.widget.SearchView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.Toast;
-
-import com.example.weather_app_drawer_second_java.weatherApp.App;
+import android.widget.TextView;
 import com.example.weather_app_drawer_second_java.weatherApp.CityWeatherDescription;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsingVersionTwo;
 import com.example.weather_app_drawer_second_java.weatherApp.SingltoneListOfCities;
 import com.example.weather_app_drawer_second_java.weatherApp.SystemMessageReceiver;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -56,33 +58,29 @@ public class MainActivity extends AppCompatActivity {
     private SimpleCursorAdapter mAdapter;
     private SystemMessageReceiver systemMessageReceiver;
     private String token;
+    private final String serverClientId = "984695975463-vktherpgmclsjj4qqlosb6oiuiiiasab.apps.googleusercontent.com";
+    private GoogleSignInClient mGoogleSignInClient;
+    private SignInButton signInButton;
+    private int  RC_SIGN_IN = 3214;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.getContext();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken(serverClientId)
+                .requestServerAuthCode(serverClientId,false)
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        initialization();
         systemMessageReceiver = new SystemMessageReceiver();
-        initGetToken();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         this.registerReceiver(systemMessageReceiver, filter);
-        initNotifChannel();
-        try {
-            singltoneListOfCities = SingltoneListOfCities.getInstance(getResources());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -93,16 +91,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            assert query != null;
-            Toast.makeText(MainActivity.this, query, Toast.LENGTH_LONG).show();
-        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            System.out.println(intent.getData());
-
-        }
 
         final String[] from = new String[]{"cityName"};
         final int[] to = new int[]{android.R.id.text1};
@@ -128,6 +116,31 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println(token);
             }
         });
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            Log.w("acc", "signInResult=" + account.getDisplayName());
+            TextView textView = (TextView) signInButton.getChildAt(0);
+            textView.setText("Logged");
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w("GoogleAUThFail", "signInResult:failed code=" + e.getStatusCode());
+        }
     }
 
     @Override
@@ -176,6 +189,17 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        signInButton = findViewById(R.id.sign_in_button);
+        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, RC_SIGN_IN);
+            }
+        });
+
+
         return true;
     }
 
@@ -247,5 +271,18 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
+    private void initialization(){
+        initGetToken();
+        initNotifChannel();
+        try {
+            singltoneListOfCities = SingltoneListOfCities.getInstance(getResources());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }
