@@ -1,4 +1,4 @@
-package com.example.weather_app_drawer_second_java.ui.slideshow;
+package com.example.weather_app_drawer_second_java.ui.weatherSettings;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,11 +10,11 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -29,9 +29,9 @@ import com.example.weather_app_drawer_second_java.R;
 import com.example.weather_app_drawer_second_java.weatherApp.SharedPreferencesClass;
 
 
-public class SlideshowFragment extends Fragment {
+public class SettingsFragment extends Fragment {
     SharedPreferences sharedPreferences;
-    private SlideshowViewModel slideshowViewModel;
+    private SettingsViewModel settingsViewModel;
     public static final String SETTING = "mySetting";
     public static final String UNITS = "units";
     public static final String NIGHT_MODE = "night";
@@ -43,20 +43,21 @@ public class SlideshowFragment extends Fragment {
     private RadioGroup radioGroup;
     private Switch rainNotificationSwitch;
     static final String BROADCAST_ACT = "com.example.weather_app_drawer_second_java.service.done";
+    private final static String BROADCAST_TAG = "weatherBroadcast";
 
 
     private BroadcastReceiver weatherUpload = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            System.out.println("BROADCAST WORKINGGGGGGGGGGGGG");
+           Log.d(BROADCAST_TAG,"works");
         }
     };
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        slideshowViewModel =
-                ViewModelProviders.of(this).get(SlideshowViewModel.class);
+        settingsViewModel =
+                ViewModelProviders.of(this).get(SettingsViewModel.class);
 
         final View root = inflater.inflate(R.layout.fragment_slideshow, container, false);
 
@@ -135,7 +136,6 @@ public class SlideshowFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initNotificationChannel();
-        // sharedPreferences = PreferenceManager.getDefaultSharedPreferences(App.getContext());
     }
 
     private void initNotificationChannel() {

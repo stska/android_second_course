@@ -74,17 +74,7 @@ public class ThermometerView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-     /*   width  = w - getPaddingStart() - getPaddingEnd();
-        height = h - getPaddingTop() - getPaddingBottom();
 
-        thermometerRectangle.set(padding,
-                padding,
-                width - padding,
-                height - padding);
-        hermometerLevelRectangle.set(2* padding,
-                2* padding,
-                (int)((width - 2*padding)*((double)maxLevel/(double)100)),
-                height - 2 * padding); */
     }
     @Override
     protected void onDraw(Canvas canvas) {

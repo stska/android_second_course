@@ -7,11 +7,11 @@ android {
 
     defaultConfig {
         applicationId "com.example.weather_app_drawer_second_java"
-        minSdkVersion 21
+        minSdkVersion 22
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
-
+        //flavorDimensions "default"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,6 +25,22 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    flavorDimensions "version"
+    productFlavors{
+        paid {
+           // dimension 'default'
+            dimension 'version'
+            applicationIdSuffix = '.paid'
+            versionNameSuffix '-paid'
+        }
+        free {
+            //dimension 'default'
+            dimension 'version'
+            applicationIdSuffix = '.free'
+            versionNameSuffix '-free'
+        }
+    }
+
 }
 
 dependencies {
@@ -37,15 +53,19 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment:2.3.0'
     implementation 'androidx.navigation:navigation-ui:2.3.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'com.google.firebase:firebase-messaging:20.2.0'
-    testImplementation 'junit:junit:4.12'
+    implementation 'com.google.firebase:firebase-messaging:20.2.4'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     def dynamicanimation_version = '1.0.0'
     implementation "androidx.dynamicanimation:dynamicanimation:$dynamicanimation_version"
     implementation 'com.facebook.fresco:fresco:2.3.0'
     implementation "android.arch.persistence.room:runtime:1.1.1"
     annotationProcessor "android.arch.persistence.room:compiler:1.1.1"
+    implementation 'com.google.maps.android:android-maps-utils:2.0.3'
+    implementation "com.google.android.gms:play-services-base:17.4.0"
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
 }

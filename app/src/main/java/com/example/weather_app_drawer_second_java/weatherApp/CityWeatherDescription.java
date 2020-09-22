@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather_app_drawer_second_java.OpenWeatherAPI;
 import com.example.weather_app_drawer_second_java.R;
+import com.example.weather_app_drawer_second_java.weatherApp.InitialFragment;
 import com.example.weather_app_drawer_second_java.weatherApp.JsonCurrentClass.WeatherParsing;
 import com.example.weather_app_drawer_second_java.weatherApp.database.SingltoneDB;
 import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDatabaseRoom;
@@ -61,7 +62,7 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
     private int mParam1;
     private String mParam2;
     private String icon;
-    InitialFragment.OnItemClickedListener mListener;
+    private InitialFragment.OnItemClickedListener mListener;
     private final String METRIC = "metric";
     private final String IMPERIAL = "";
     private final String weatherSite = "https://api.openweathermap.org";
@@ -139,8 +140,6 @@ public class CityWeatherDescription extends Fragment implements PropertyChangeLi
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(myContext, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
-        TempRecycleVoewAdapter adapter = new TempRecycleVoewAdapter();
-        recyclerView.setAdapter(adapter);
 
     }
 

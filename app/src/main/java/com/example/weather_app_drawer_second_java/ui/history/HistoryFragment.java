@@ -1,4 +1,4 @@
-package com.example.weather_app_drawer_second_java.ui.gallery;
+package com.example.weather_app_drawer_second_java.ui.history;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -24,11 +24,11 @@ import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherSou
 import com.example.weather_app_drawer_second_java.weatherApp.database.WeatherDaoInterface;
 
 
-public class GalleryFragment extends Fragment {
+public class HistoryFragment extends Fragment {
     WeatherDaoInterface weatherDaoInterface;
     WeatherSourceForDB weatherSourceForDB;
 
-    private GalleryViewModel galleryViewModel;
+    private HistoryViewModel historyViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -40,11 +40,11 @@ public class GalleryFragment extends Fragment {
             }
             WeatherHistory.weatherHistories.get(0).getCityName();
         }
-        galleryViewModel =
-                ViewModelProviders.of(this).get(GalleryViewModel.class);
+        historyViewModel =
+                ViewModelProviders.of(this).get(HistoryViewModel.class);
         View root = inflater.inflate(R.layout.fragment_gallery, container, false);
         final TextView textView = root.findViewById(R.id.text_gallery);
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        historyViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(test);
